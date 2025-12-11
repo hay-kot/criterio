@@ -17,22 +17,40 @@ func StrNotEmpty() Validator[string] {
 	}
 }
 
-// StrMinLen returns a validator that checks if a string has at least min characters.
+// StrMin returns a validator that checks if a string has at least min characters.
 // This is a convenience wrapper around MinLen for strings.
-func StrMinLen(min int) Validator[string] {
-	return MinLen[string](min)
+func StrMin(min int) Validator[string] {
+	return func(field, val string) error {
+		if len(val) < min {
+			return fmt.Errorf("string must be atleast %d characters", min)
+		}
+
+		return nil
+	}
 }
 
-// StrMaxLen returns a validator that checks if a string has at most max characters.
+// StrMax returns a validator that checks if a string has at most max characters.
 // This is a convenience wrapper around MaxLen for strings.
-func StrMaxLen(max int) Validator[string] {
-	return MaxLen[string](max)
+func StrMax(max int) Validator[string] {
+	return func(field, val string) error {
+		if len(val) > max {
+			return fmt.Errorf("must be no more than %d characters", max)
+		}
+
+		return nil
+	}
 }
 
 // StrBetween returns a validator that checks if a string length is between low and high (inclusive).
 // This is a convenience wrapper around LenBetween for strings.
 func StrBetween(low, high int) Validator[string] {
-	return LenBetween[string](low, high)
+	return func(field string, val string) error {
+		length := len(val)
+		if length < low || length > high {
+			return fmt.Errorf("must be between %d and %d characters", low, high)
+		}
+		return nil
+	}
 }
 
 // StrMatches returns a validator that checks if a string matches the provided regex pattern.
