@@ -1,4 +1,4 @@
-// Package validation provides utilities for marking and handling validation errors.
+// Package criterio provides utilities for marking and handling validation errors.
 package criterio
 
 import (

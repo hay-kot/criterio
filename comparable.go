@@ -11,11 +11,11 @@ import (
 func OneOf[T comparable](allowed ...T) Validator[T] {
 	// Use slice iteration for small sets (faster due to cache locality)
 	if len(allowed) <= 10 {
-		return func(field string, val T) error {
+		return func(val T) error {
 			if slices.Contains(allowed, val) {
 				return nil
 			}
-			return fmt.Errorf("must be one of the allowed values: %s")
+			return fmt.Errorf("must be one of the allowed values")
 		}
 	}
 
@@ -24,7 +24,7 @@ func OneOf[T comparable](allowed ...T) Validator[T] {
 	for _, a := range allowed {
 		allowedSet[a] = struct{}{}
 	}
-	return func(field string, val T) error {
+	return func(val T) error {
 		if _, ok := allowedSet[val]; !ok {
 			return fmt.Errorf("must be one of the allowed values")
 		}
