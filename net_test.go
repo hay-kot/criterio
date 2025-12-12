@@ -20,7 +20,7 @@ func TestNetIP(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetIP()(tt.value)
+			err := NetIP(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetIP()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -45,7 +45,7 @@ func TestNetIPv4(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetIPv4()(tt.value)
+			err := NetIPv4(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetIPv4()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -68,7 +68,7 @@ func TestNetIPv6(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetIPv6()(tt.value)
+			err := NetIPv6(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetIPv6()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -92,7 +92,7 @@ func TestNetCIDR(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetCIDR()(tt.value)
+			err := NetCIDR(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetCIDR()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -121,7 +121,7 @@ func TestNetHost(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetHost()(tt.value)
+			err := NetHost(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetHost()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -146,7 +146,7 @@ func TestNetPort(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetPort()(tt.value)
+			err := NetPort(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetPort()(%d) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -174,7 +174,7 @@ func TestNetPortStr(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NetPortStr()(tt.value)
+			err := NetPortStr(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NetPortStr()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}

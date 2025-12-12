@@ -15,7 +15,7 @@ func TestRun(t *testing.T) {
 
 	t.Run("passes when all validators pass", func(t *testing.T) {
 		err := Run("name", "hello",
-			StrNotEmpty(),
+			StrNotEmpty,
 			StrMin(3),
 		)
 		if err != nil {
@@ -35,7 +35,7 @@ func TestRun(t *testing.T) {
 
 	t.Run("collects multiple errors", func(t *testing.T) {
 		err := Run("value", "",
-			StrNotEmpty(),
+			StrNotEmpty,
 			StrMin(5),
 		)
 		if err == nil {
@@ -54,8 +54,8 @@ func TestRun(t *testing.T) {
 func TestNew(t *testing.T) {
 	t.Run("creates reusable validator", func(t *testing.T) {
 		validateEmail := New("email",
-			Required[string](),
-			StrEmail(),
+			Required[string],
+			StrEmail,
 		)
 
 		if err := validateEmail("test@example.com"); err != nil {
@@ -65,8 +65,8 @@ func TestNew(t *testing.T) {
 
 	t.Run("returns errors for invalid input", func(t *testing.T) {
 		validateEmail := New("email",
-			Required[string](),
-			StrEmail(),
+			Required[string],
+			StrEmail,
 		)
 
 		err := validateEmail("invalid")
@@ -80,7 +80,7 @@ func TestNew(t *testing.T) {
 
 	t.Run("collects all errors", func(t *testing.T) {
 		validateName := New("name",
-			Required[string](),
+			Required[string],
 			StrMin(3),
 			StrMax(10),
 		)
@@ -118,11 +118,11 @@ func TestRequired(t *testing.T) {
 			var err error
 			switch v := tt.value.(type) {
 			case string:
-				err = Required[string]()(v)
+				err = Required[string](v)
 			case int:
-				err = Required[int]()(v)
+				err = Required[int](v)
 			case bool:
-				err = Required[bool]()(v)
+				err = Required[bool](v)
 			}
 
 			if (err != nil) != tt.wantErr {

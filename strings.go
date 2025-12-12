@@ -8,16 +8,14 @@ import (
 	"strings"
 )
 
-// StrNotEmpty returns a validator that checks if a string is not empty or whitespace-only.
+// StrNotEmpty validates that a string is not empty or whitespace-only.
 // Note: This trims whitespace before checking, so "   " is considered empty.
 // Use Required[string]() if you only want to reject the zero value "".
-func StrNotEmpty() Validator[string] {
-	return func(val string) error {
-		if strings.TrimSpace(val) == "" {
-			return fmt.Errorf("cannot be empty")
-		}
-		return nil
+var StrNotEmpty Validator[string] = func(val string) error {
+	if strings.TrimSpace(val) == "" {
+		return fmt.Errorf("cannot be empty")
 	}
+	return nil
 }
 
 // StrMin returns a validator that checks if a string has at least min characters.
@@ -66,15 +64,13 @@ func StrMatches(pattern string) Validator[string] {
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 
-// StrEmail returns a validator that checks if a string is a valid email address.
+// StrEmail validates that a string is a valid email address.
 // Uses a simple regex pattern for basic validation.
-func StrEmail() Validator[string] {
-	return func(val string) error {
-		if !emailRegex.MatchString(val) {
-			return fmt.Errorf("must be a valid email address")
-		}
-		return nil
+var StrEmail Validator[string] = func(val string) error {
+	if !emailRegex.MatchString(val) {
+		return fmt.Errorf("must be a valid email address")
 	}
+	return nil
 }
 
 // StrOneOf returns a validator that checks if a string is one of the allowed values.
@@ -103,64 +99,54 @@ func StrOneOf(allowed ...string) Validator[string] {
 	}
 }
 
-// StrURL returns a validator that checks if a string is a valid URL.
+// StrURL validates that a string is a valid URL.
 // Validates that the string can be parsed as a URL with a scheme and host.
-func StrURL() Validator[string] {
-	return func(val string) error {
-		u, err := url.Parse(val)
-		if err != nil || u.Scheme == "" || u.Host == "" {
-			return fmt.Errorf("must be a valid URL")
-		}
-		return nil
+var StrURL Validator[string] = func(val string) error {
+	u, err := url.Parse(val)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return fmt.Errorf("must be a valid URL")
 	}
+	return nil
 }
 
 var uuidRegex = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
 
-// StrUUID returns a validator that checks if a string is a valid UUID format.
-func StrUUID() Validator[string] {
-	return func(val string) error {
-		if !uuidRegex.MatchString(val) {
-			return fmt.Errorf("must be a valid UUID")
-		}
-		return nil
+// StrUUID validates that a string is a valid UUID format.
+var StrUUID Validator[string] = func(val string) error {
+	if !uuidRegex.MatchString(val) {
+		return fmt.Errorf("must be a valid UUID")
 	}
+	return nil
 }
 
 var alphaRegex = regexp.MustCompile(`^[a-zA-Z]+$`)
 
-// StrAlpha returns a validator that checks if a string contains only letters.
-func StrAlpha() Validator[string] {
-	return func(val string) error {
-		if !alphaRegex.MatchString(val) {
-			return fmt.Errorf("must contain only letters")
-		}
-		return nil
+// StrAlpha validates that a string contains only letters.
+var StrAlpha Validator[string] = func(val string) error {
+	if !alphaRegex.MatchString(val) {
+		return fmt.Errorf("must contain only letters")
 	}
+	return nil
 }
 
 var alphanumericRegex = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 
-// StrAlphanumeric returns a validator that checks if a string contains only letters and numbers.
-func StrAlphanumeric() Validator[string] {
-	return func(val string) error {
-		if !alphanumericRegex.MatchString(val) {
-			return fmt.Errorf("must contain only letters and numbers")
-		}
-		return nil
+// StrAlphanumeric validates that a string contains only letters and numbers.
+var StrAlphanumeric Validator[string] = func(val string) error {
+	if !alphanumericRegex.MatchString(val) {
+		return fmt.Errorf("must contain only letters and numbers")
 	}
+	return nil
 }
 
 var numericRegex = regexp.MustCompile(`^[0-9]+$`)
 
-// StrNumeric returns a validator that checks if a string contains only digits.
-func StrNumeric() Validator[string] {
-	return func(val string) error {
-		if !numericRegex.MatchString(val) {
-			return fmt.Errorf("must contain only digits")
-		}
-		return nil
+// StrNumeric validates that a string contains only digits.
+var StrNumeric Validator[string] = func(val string) error {
+	if !numericRegex.MatchString(val) {
+		return fmt.Errorf("must contain only digits")
 	}
+	return nil
 }
 
 // StrContains returns a validator that checks if a string contains a substring.
@@ -195,32 +181,26 @@ func StrHasSuffix(suffix string) Validator[string] {
 
 var whitespaceRegex = regexp.MustCompile(`\s`)
 
-// StrNoWhitespace returns a validator that checks if a string contains no whitespace.
-func StrNoWhitespace() Validator[string] {
-	return func(val string) error {
-		if whitespaceRegex.MatchString(val) {
-			return fmt.Errorf("must not contain whitespace")
-		}
-		return nil
+// StrNoWhitespace validates that a string contains no whitespace.
+var StrNoWhitespace Validator[string] = func(val string) error {
+	if whitespaceRegex.MatchString(val) {
+		return fmt.Errorf("must not contain whitespace")
 	}
+	return nil
 }
 
-// StrLowercase returns a validator that checks if a string is all lowercase.
-func StrLowercase() Validator[string] {
-	return func(val string) error {
-		if val != strings.ToLower(val) {
-			return fmt.Errorf("must be lowercase")
-		}
-		return nil
+// StrLowercase validates that a string is all lowercase.
+var StrLowercase Validator[string] = func(val string) error {
+	if val != strings.ToLower(val) {
+		return fmt.Errorf("must be lowercase")
 	}
+	return nil
 }
 
-// StrUppercase returns a validator that checks if a string is all uppercase.
-func StrUppercase() Validator[string] {
-	return func(val string) error {
-		if val != strings.ToUpper(val) {
-			return fmt.Errorf("must be uppercase")
-		}
-		return nil
+// StrUppercase validates that a string is all uppercase.
+var StrUppercase Validator[string] = func(val string) error {
+	if val != strings.ToUpper(val) {
+		return fmt.Errorf("must be uppercase")
 	}
+	return nil
 }

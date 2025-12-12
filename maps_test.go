@@ -98,7 +98,7 @@ func TestMapNotEmpty(t *testing.T) {
 
 func TestMapKeys(t *testing.T) {
 	t.Run("all keys pass", func(t *testing.T) {
-		validator := MapKeys[string, int](StrNotEmpty())
+		validator := MapKeys[string, int](StrNotEmpty)
 		m := map[string]int{"hello": 1, "world": 2}
 		if err := validator(m); err != nil {
 			t.Errorf("expected nil, got %v", err)
@@ -118,7 +118,7 @@ func TestMapKeys(t *testing.T) {
 	})
 
 	t.Run("empty map passes", func(t *testing.T) {
-		validator := MapKeys[string, int](StrNotEmpty())
+		validator := MapKeys[string, int](StrNotEmpty)
 		if err := validator(map[string]int{}); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -154,7 +154,7 @@ func TestMapValues(t *testing.T) {
 	})
 
 	t.Run("with string values", func(t *testing.T) {
-		validator := MapValues[int, string](StrNotEmpty())
+		validator := MapValues[int, string](StrNotEmpty)
 		m := map[int]string{1: "hello", 2: "world"}
 		if err := validator(m); err != nil {
 			t.Errorf("expected nil, got %v", err)

@@ -155,7 +155,7 @@ func TestSliceEach(t *testing.T) {
 	})
 
 	t.Run("with string validator", func(t *testing.T) {
-		validator := SliceEach(StrNotEmpty())
+		validator := SliceEach(StrNotEmpty)
 		if err := validator([]string{"a", "b", "c"}); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}

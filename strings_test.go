@@ -19,7 +19,7 @@ func TestStrNotEmpty(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrNotEmpty()(tt.value)
+			err := StrNotEmpty(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrNotEmpty()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -137,7 +137,7 @@ func TestStrEmail(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrEmail()(tt.value)
+			err := StrEmail(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrEmail()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -193,7 +193,7 @@ func TestStrURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrURL()(tt.value)
+			err := StrURL(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrURL()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -217,7 +217,7 @@ func TestStrUUID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrUUID()(tt.value)
+			err := StrUUID(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrUUID()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -241,7 +241,7 @@ func TestStrAlpha(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrAlpha()(tt.value)
+			err := StrAlpha(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrAlpha()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -264,7 +264,7 @@ func TestStrAlphanumeric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrAlphanumeric()(tt.value)
+			err := StrAlphanumeric(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrAlphanumeric()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -287,7 +287,7 @@ func TestStrNumeric(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrNumeric()(tt.value)
+			err := StrNumeric(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrNumeric()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -378,7 +378,7 @@ func TestStrNoWhitespace(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrNoWhitespace()(tt.value)
+			err := StrNoWhitespace(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrNoWhitespace()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -401,7 +401,7 @@ func TestStrLowercase(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrLowercase()(tt.value)
+			err := StrLowercase(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrLowercase()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}
@@ -424,7 +424,7 @@ func TestStrUppercase(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := StrUppercase()(tt.value)
+			err := StrUppercase(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StrUppercase()(%q) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}

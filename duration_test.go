@@ -88,7 +88,7 @@ func TestDurPositive(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := DurPositive()(tt.value)
+			err := DurPositive(tt.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DurPositive()(%v) error = %v, wantErr %v", tt.value, err, tt.wantErr)
 			}

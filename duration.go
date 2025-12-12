@@ -35,12 +35,10 @@ func DurBetween(low, high time.Duration) Validator[time.Duration] {
 	}
 }
 
-// DurPositive returns a validator that checks if a duration is positive (greater than zero).
-func DurPositive() Validator[time.Duration] {
-	return func(val time.Duration) error {
-		if val <= 0 {
-			return fmt.Errorf("must be positive")
-		}
-		return nil
+// DurPositive validates that a duration is positive (greater than zero).
+var DurPositive Validator[time.Duration] = func(val time.Duration) error {
+	if val <= 0 {
+		return fmt.Errorf("must be positive")
 	}
+	return nil
 }

@@ -16,7 +16,7 @@ func main() {
 func run() error {
 	// Create a reusable validator
 	validateName := criterio.New("name",
-		criterio.Required[string](),
+		criterio.Required[string],
 		criterio.StrBetween(8, 128),
 		criterio.OneOf("Hayden L", "Hayden J", "Hayden F"),
 	)
@@ -28,7 +28,7 @@ func run() error {
 
 	// Run validators inline
 	if err := criterio.Run("name", "Hayden K",
-		criterio.Required[string](),
+		criterio.Required[string],
 		criterio.StrBetween(8, 128),
 		criterio.OneOf("Hayden L", "Hayden J", "Hayden F"),
 	); err != nil {
