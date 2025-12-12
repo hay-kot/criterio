@@ -32,3 +32,39 @@ func SliceLenBetween[T any](low, high int) Validator[[]T] {
 		return nil
 	}
 }
+
+// SliceNotEmpty returns a validator that checks if a slice has at least one element.
+func SliceNotEmpty[T any]() Validator[[]T] {
+	return func(val []T) error {
+		if len(val) == 0 {
+			return fmt.Errorf("must not be empty")
+		}
+		return nil
+	}
+}
+
+// SliceUnique returns a validator that checks if all elements in a slice are unique.
+func SliceUnique[T comparable]() Validator[[]T] {
+	return func(val []T) error {
+		seen := make(map[T]struct{}, len(val))
+		for _, v := range val {
+			if _, exists := seen[v]; exists {
+				return fmt.Errorf("must contain unique elements")
+			}
+			seen[v] = struct{}{}
+		}
+		return nil
+	}
+}
+
+// SliceEach returns a validator that applies a validator to each element in a slice.
+func SliceEach[T any](validator Validator[T]) Validator[[]T] {
+	return func(val []T) error {
+		for i, v := range val {
+			if err := validator(v); err != nil {
+				return fmt.Errorf("element %d: %w", i, err)
+			}
+		}
+		return nil
+	}
+}

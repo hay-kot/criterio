@@ -2,6 +2,7 @@ package criterio
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 	"slices"
 	"strings"
@@ -97,6 +98,128 @@ func StrOneOf(allowed ...string) Validator[string] {
 	return func(val string) error {
 		if _, ok := allowedSet[val]; !ok {
 			return fmt.Errorf("must be one of: %s", strings.Join(allowed, ", "))
+		}
+		return nil
+	}
+}
+
+// StrURL returns a validator that checks if a string is a valid URL.
+// Validates that the string can be parsed as a URL with a scheme and host.
+func StrURL() Validator[string] {
+	return func(val string) error {
+		u, err := url.Parse(val)
+		if err != nil || u.Scheme == "" || u.Host == "" {
+			return fmt.Errorf("must be a valid URL")
+		}
+		return nil
+	}
+}
+
+var uuidRegex = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+
+// StrUUID returns a validator that checks if a string is a valid UUID format.
+func StrUUID() Validator[string] {
+	return func(val string) error {
+		if !uuidRegex.MatchString(val) {
+			return fmt.Errorf("must be a valid UUID")
+		}
+		return nil
+	}
+}
+
+var alphaRegex = regexp.MustCompile(`^[a-zA-Z]+$`)
+
+// StrAlpha returns a validator that checks if a string contains only letters.
+func StrAlpha() Validator[string] {
+	return func(val string) error {
+		if !alphaRegex.MatchString(val) {
+			return fmt.Errorf("must contain only letters")
+		}
+		return nil
+	}
+}
+
+var alphanumericRegex = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+
+// StrAlphanumeric returns a validator that checks if a string contains only letters and numbers.
+func StrAlphanumeric() Validator[string] {
+	return func(val string) error {
+		if !alphanumericRegex.MatchString(val) {
+			return fmt.Errorf("must contain only letters and numbers")
+		}
+		return nil
+	}
+}
+
+var numericRegex = regexp.MustCompile(`^[0-9]+$`)
+
+// StrNumeric returns a validator that checks if a string contains only digits.
+func StrNumeric() Validator[string] {
+	return func(val string) error {
+		if !numericRegex.MatchString(val) {
+			return fmt.Errorf("must contain only digits")
+		}
+		return nil
+	}
+}
+
+// StrContains returns a validator that checks if a string contains a substring.
+func StrContains(substr string) Validator[string] {
+	return func(val string) error {
+		if !strings.Contains(val, substr) {
+			return fmt.Errorf("must contain %q", substr)
+		}
+		return nil
+	}
+}
+
+// StrHasPrefix returns a validator that checks if a string starts with a prefix.
+func StrHasPrefix(prefix string) Validator[string] {
+	return func(val string) error {
+		if !strings.HasPrefix(val, prefix) {
+			return fmt.Errorf("must start with %q", prefix)
+		}
+		return nil
+	}
+}
+
+// StrHasSuffix returns a validator that checks if a string ends with a suffix.
+func StrHasSuffix(suffix string) Validator[string] {
+	return func(val string) error {
+		if !strings.HasSuffix(val, suffix) {
+			return fmt.Errorf("must end with %q", suffix)
+		}
+		return nil
+	}
+}
+
+var whitespaceRegex = regexp.MustCompile(`\s`)
+
+// StrNoWhitespace returns a validator that checks if a string contains no whitespace.
+func StrNoWhitespace() Validator[string] {
+	return func(val string) error {
+		if whitespaceRegex.MatchString(val) {
+			return fmt.Errorf("must not contain whitespace")
+		}
+		return nil
+	}
+}
+
+// StrLowercase returns a validator that checks if a string is all lowercase.
+func StrLowercase() Validator[string] {
+	return func(val string) error {
+		if val != strings.ToLower(val) {
+			return fmt.Errorf("must be lowercase")
+		}
+		return nil
+	}
+}
+
+// StrUppercase returns a validator that checks if a string is all uppercase.
+func StrUppercase() Validator[string] {
+	return func(val string) error {
+		if val != strings.ToUpper(val) {
+			return fmt.Errorf("must be uppercase")
 		}
 		return nil
 	}
