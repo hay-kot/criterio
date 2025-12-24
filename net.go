@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+// Default regex patterns used by network validators.
+// These can be modified to change validation behavior globally.
+// WARNING: Modifying these affects all validations application-wide.
+var (
+	HostnameRegex = regexp.MustCompile(`^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$`)
+)
+
 // NetIP validates that a string is a valid IP address (IPv4 or IPv6).
 func NetIP(val string) error {
 	if net.ParseIP(val) == nil {
@@ -43,14 +50,13 @@ func NetCIDR(val string) error {
 	return nil
 }
 
-var hostnameRegex = regexp.MustCompile(`^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$`)
-
 // NetHost validates that a string is a valid hostname.
+// Uses HostnameRegex which can be modified to change validation globally.
 func NetHost(val string) error {
 	if len(val) > 253 {
 		return fmt.Errorf("must be a valid hostname")
 	}
-	if !hostnameRegex.MatchString(val) {
+	if !HostnameRegex.MatchString(val) {
 		return fmt.Errorf("must be a valid hostname")
 	}
 	// Check each label length
