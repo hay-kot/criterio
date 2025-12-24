@@ -64,7 +64,8 @@ func ValidateStruct(validations ...error) error {
 		if err == nil {
 			continue
 		}
-		if fieldErrs, ok := err.(FieldErrors); ok {
+		var fieldErrs FieldErrors
+		if errors.As(err, &fieldErrs) {
 			errs = append(errs, fieldErrs...)
 		} else {
 			errs = errs.Append("", err.Error())
@@ -79,7 +80,8 @@ func Nest(field string, err error) error {
 	if err == nil {
 		return nil
 	}
-	fieldErrs, ok := err.(FieldErrors)
+	var fieldErrs FieldErrors
+	ok := errors.As(err, &fieldErrs)
 	if !ok {
 		return NewFieldErrors(field, err.Error())
 	}
