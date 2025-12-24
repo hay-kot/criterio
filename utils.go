@@ -3,6 +3,7 @@ package criterio
 import (
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 // Validator validates a value and returns an error if validation fails.
@@ -143,4 +144,28 @@ func Not[T any](v Validator[T], msg string) Validator[T] {
 		}
 		return nil
 	}
+}
+
+// ValidateSlice validates each element in a slice using the provided function.
+// Errors are prefixed with bracket notation (e.g., "items[0].name: is required").
+func ValidateSlice[T any](field string, items []T, validate func(T) error) error {
+	var errs FieldErrorsBuilder
+	for i, item := range items {
+		if err := validate(item); err != nil {
+			prefix := field + "[" + strconv.Itoa(i) + "]"
+			var fieldErrs FieldErrors
+			if errors.As(err, &fieldErrs) {
+				for _, fe := range fieldErrs {
+					if fe.Field == "" {
+						errs = errs.Append(prefix, fe.Message)
+					} else {
+						errs = errs.Append(prefix+"."+fe.Field, fe.Message)
+					}
+				}
+			} else {
+				errs = errs.Append(prefix, err.Error())
+			}
+		}
+	}
+	return errs.ToError()
 }

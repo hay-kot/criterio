@@ -497,3 +497,137 @@ func TestNot(t *testing.T) {
 		}
 	})
 }
+
+func TestValidateSlice(t *testing.T) {
+	type Address struct {
+		Street string
+		Zip    string
+	}
+
+	validateAddress := func(a Address) error {
+		return ValidateStruct(
+			Run("street", a.Street, Required[string]),
+			Run("zip", a.Zip, Required[string], StrNumeric),
+		)
+	}
+
+	t.Run("returns nil for empty slice", func(t *testing.T) {
+		err := ValidateSlice("addresses", []Address{}, validateAddress)
+		if err != nil {
+			t.Errorf("expected nil, got %v", err)
+		}
+	})
+
+	t.Run("returns nil when all elements valid", func(t *testing.T) {
+		addresses := []Address{
+			{Street: "123 Main St", Zip: "12345"},
+			{Street: "456 Oak Ave", Zip: "67890"},
+		}
+		err := ValidateSlice("addresses", addresses, validateAddress)
+		if err != nil {
+			t.Errorf("expected nil, got %v", err)
+		}
+	})
+
+	t.Run("returns indexed errors for invalid elements", func(t *testing.T) {
+		addresses := []Address{
+			{Street: "123 Main St", Zip: "12345"},
+			{Street: "", Zip: "abc"},
+		}
+		err := ValidateSlice("addresses", addresses, validateAddress)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+
+		var fieldErrs FieldErrors
+		if !errors.As(err, &fieldErrs) {
+			t.Fatal("expected FieldErrors type")
+		}
+		if len(fieldErrs) != 2 {
+			t.Errorf("expected 2 errors, got %d", len(fieldErrs))
+		}
+		if fieldErrs[0].Field != "addresses[1].street" {
+			t.Errorf("expected addresses[1].street, got %s", fieldErrs[0].Field)
+		}
+		if fieldErrs[1].Field != "addresses[1].zip" {
+			t.Errorf("expected addresses[1].zip, got %s", fieldErrs[1].Field)
+		}
+	})
+
+	t.Run("collects errors from multiple elements", func(t *testing.T) {
+		addresses := []Address{
+			{Street: "", Zip: "12345"},
+			{Street: "456 Oak Ave", Zip: ""},
+		}
+		err := ValidateSlice("addresses", addresses, validateAddress)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+
+		var fieldErrs FieldErrors
+		if !errors.As(err, &fieldErrs) {
+			t.Fatal("expected FieldErrors type")
+		}
+		if len(fieldErrs) != 2 {
+			t.Errorf("expected 2 errors, got %d", len(fieldErrs))
+		}
+		if fieldErrs[0].Field != "addresses[0].street" {
+			t.Errorf("expected addresses[0].street, got %s", fieldErrs[0].Field)
+		}
+		if fieldErrs[1].Field != "addresses[1].zip" {
+			t.Errorf("expected addresses[1].zip, got %s", fieldErrs[1].Field)
+		}
+	})
+
+	t.Run("works with simple validators", func(t *testing.T) {
+		emails := []string{"valid@example.com", "invalid", "also@valid.com"}
+		err := ValidateSlice("emails", emails, StrEmail)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+
+		var fieldErrs FieldErrors
+		if !errors.As(err, &fieldErrs) {
+			t.Fatal("expected FieldErrors type")
+		}
+		if len(fieldErrs) != 1 {
+			t.Errorf("expected 1 error, got %d", len(fieldErrs))
+		}
+		if fieldErrs[0].Field != "emails[1]" {
+			t.Errorf("expected emails[1], got %s", fieldErrs[0].Field)
+		}
+	})
+
+	t.Run("works in ValidateStruct", func(t *testing.T) {
+		type User struct {
+			Name      string
+			Addresses []Address
+		}
+
+		user := User{
+			Name: "John",
+			Addresses: []Address{
+				{Street: "", Zip: "12345"},
+			},
+		}
+
+		err := ValidateStruct(
+			Run("name", user.Name, Required[string]),
+			ValidateSlice("addresses", user.Addresses, validateAddress),
+		)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+
+		var fieldErrs FieldErrors
+		if !errors.As(err, &fieldErrs) {
+			t.Fatal("expected FieldErrors type")
+		}
+		if len(fieldErrs) != 1 {
+			t.Errorf("expected 1 error, got %d", len(fieldErrs))
+		}
+		if fieldErrs[0].Field != "addresses[0].street" {
+			t.Errorf("expected addresses[0].street, got %s", fieldErrs[0].Field)
+		}
+	})
+}

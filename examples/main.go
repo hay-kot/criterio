@@ -15,6 +15,7 @@ func main() {
 	exampleConditionalValidation()
 	exampleCombinators()
 	exampleRunAllVsRun()
+	exampleSliceValidation()
 }
 
 // -----------------------------------------------------------------------------

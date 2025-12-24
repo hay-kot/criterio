@@ -82,6 +82,25 @@ criterio.When(u.IsPremium, criterio.Required[string])
 criterio.SkipIf(u.IsGuest, criterio.StrEmail)
 ```
 
+### Slice Validation
+
+```go
+func (u User) Validate() error {
+    return criterio.ValidateStruct(
+        criterio.Run("name", u.Name, criterio.Required[string]),
+        criterio.ValidateSlice("addresses", u.Addresses, Address.Validate),
+    )
+}
+// Error: "addresses[0].street: is required"
+```
+
+For simple slices:
+
+```go
+criterio.ValidateSlice("emails", emails, criterio.StrEmail)
+// Error: "emails[1]: must be a valid email address"
+```
+
 ### Combinators
 
 ```go
@@ -219,6 +238,13 @@ Nested struct errors use dot notation:
 ```
 address.street: is required
 address.zip: must contain only digits
+```
+
+Slice errors use bracket notation:
+
+```
+addresses[0].street: is required
+emails[1]: must be a valid email address
 ```
 
 ### Accessing Individual Errors
