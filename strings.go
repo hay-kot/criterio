@@ -63,9 +63,8 @@ func StrBetween(low, high int) Validator[string] {
 	}
 }
 
-// StrMatches returns a validator that checks if a string matches the provided regex pattern.
-func StrMatches(pattern string) Validator[string] {
-	re := regexp.MustCompile(pattern)
+// StrMatches returns a validator that checks if a string matches the provided regex.
+func StrMatches(re *regexp.Regexp) Validator[string] {
 	return func(val string) error {
 		if !re.MatchString(val) {
 			return fmt.Errorf("does not match required pattern")

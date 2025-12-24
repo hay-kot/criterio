@@ -1,6 +1,7 @@
 package criterio
 
 import (
+	"regexp"
 	"testing"
 )
 
@@ -100,20 +101,20 @@ func TestStrBetween(t *testing.T) {
 func TestStrMatches(t *testing.T) {
 	tests := []struct {
 		name    string
-		pattern string
+		pattern *regexp.Regexp
 		value   string
 		wantErr bool
 	}{
-		{"matches simple pattern", `^[a-z]+$`, "hello", false},
-		{"does not match", `^[a-z]+$`, "Hello123", true},
-		{"matches digit pattern", `^\d{3}-\d{4}$`, "123-4567", false},
+		{"matches simple pattern", regexp.MustCompile(`^[a-z]+$`), "hello", false},
+		{"does not match", regexp.MustCompile(`^[a-z]+$`), "Hello123", true},
+		{"matches digit pattern", regexp.MustCompile(`^\d{3}-\d{4}$`), "123-4567", false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := StrMatches(tt.pattern)(tt.value)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("StrMatches(%q)(%q) error = %v, wantErr %v", tt.pattern, tt.value, err, tt.wantErr)
+				t.Errorf("StrMatches(%v)(%q) error = %v, wantErr %v", tt.pattern, tt.value, err, tt.wantErr)
 			}
 		})
 	}
