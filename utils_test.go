@@ -271,8 +271,8 @@ func TestValidateStruct(t *testing.T) {
 		if fieldErrs[0].Field != "" {
 			t.Errorf("expected empty field, got %s", fieldErrs[0].Field)
 		}
-		if fieldErrs[0].Message != "generic error" {
-			t.Errorf("expected 'generic error', got %s", fieldErrs[0].Message)
+		if fieldErrs[0].Err.Error() != "generic error" {
+			t.Errorf("expected 'generic error', got %s", fieldErrs[0].Err.Error())
 		}
 	})
 }
@@ -380,7 +380,7 @@ func TestNest(t *testing.T) {
 	})
 
 	t.Run("handles empty field in original error", func(t *testing.T) {
-		err := Nest("config", FieldErrors{{Field: "", Message: "invalid format"}})
+		err := Nest("config", FieldErrors{{Field: "", Err: errors.New("invalid format")}})
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}

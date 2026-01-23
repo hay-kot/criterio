@@ -2,23 +2,27 @@
 package criterio
 
 import (
-	"fmt"
 	"strings"
 )
 
-// FieldError represents a validation error for a specific field. Generally, you won't deal with
-// this type directly and instead you'll want to use [FieldErrorsBuilder] to build errors.
+// FieldError represents a validation error for a specific field.
 type FieldError struct {
-	Field   string
-	Message string
+	Field string
+	Err   error
 }
 
 // Error returns the error message for this field error.
 func (e FieldError) Error() string {
 	if e.Field == "" {
-		return e.Message
+		return e.Err.Error()
 	}
-	return fmt.Sprintf("%s: %s", e.Field, e.Message)
+	// Use string concatenation - faster than fmt.Sprintf for simple cases
+	return e.Field + ": " + e.Err.Error()
+}
+
+// Unwrap returns the underlying error for use with errors.Is and errors.As.
+func (e FieldError) Unwrap() error {
+	return e.Err
 }
 
 // FieldErrorsBuilder is used to build a collection of field validation errors.
@@ -30,12 +34,12 @@ type FieldErrorsBuilder []FieldError
 //
 // Example usage:
 //
-//	var errs validation.FieldErrorsBuilder
-//	errs = errs.Append("name", "cannot be empty")
-//	errs = errs.Append("duration", "must be positive")
+//	var errs criterio.FieldErrorsBuilder
+//	errs = errs.Append("name", errRequired)
+//	errs = errs.Append("duration", errPositive)
 //	return errs.ToError()
-func (b FieldErrorsBuilder) Append(field, message string) FieldErrorsBuilder {
-	return append(b, FieldError{Field: field, Message: message})
+func (b FieldErrorsBuilder) Append(field string, err error) FieldErrorsBuilder {
+	return append(b, FieldError{Field: field, Err: err})
 }
 
 // ToError converts FieldErrorsBuilder to an error.
@@ -53,8 +57,6 @@ type FieldErrors []FieldError
 // Error returns a human-readable error message combining all field errors.
 func (e FieldErrors) Error() string {
 	if len(e) == 0 {
-		// In practice, this should never happen, but we include it as a case to catch any
-		// incorrect usage in the logs.
 		return "validation failed with zero error collected"
 	}
 	if len(e) == 1 {
@@ -65,17 +67,20 @@ func (e FieldErrors) Error() string {
 	bldr.WriteString("validation failed: ")
 	for i, err := range e {
 		if i > 0 {
-			bldr.WriteRune(';')
-			bldr.WriteRune(' ')
+			bldr.WriteString("; ")
 		}
-
 		bldr.WriteString(err.Error())
 	}
 
 	return bldr.String()
 }
 
+// NewFieldError creates a single FieldError.
+func NewFieldError(field string, err error) FieldError {
+	return FieldError{Field: field, Err: err}
+}
+
 // NewFieldErrors creates a new FieldErrors from a single field error.
-func NewFieldErrors(field, message string) FieldErrors {
-	return FieldErrors{FieldError{Field: field, Message: message}}
+func NewFieldErrors(field string, err error) FieldErrors {
+	return FieldErrors{{Field: field, Err: err}}
 }

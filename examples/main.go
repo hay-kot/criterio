@@ -114,7 +114,7 @@ func exampleNestedErrors() {
 		var fieldErrs criterio.FieldErrors
 		if errors.As(err, &fieldErrs) {
 			for _, fe := range fieldErrs {
-				fmt.Printf("   - %s: %s\n", fe.Field, fe.Message)
+				fmt.Printf("   - %s: %s\n", fe.Field, fe.Err.Error())
 			}
 		}
 	}
@@ -155,7 +155,7 @@ func exampleConditionalValidation() {
 		var fieldErrs criterio.FieldErrors
 		if errors.As(err, &fieldErrs) {
 			for _, fe := range fieldErrs {
-				fmt.Printf("   Premium user error - %s: %s\n", fe.Field, fe.Message)
+				fmt.Printf("   Premium user error - %s: %s\n", fe.Field, fe.Err.Error())
 			}
 		}
 	}
@@ -226,7 +226,7 @@ func exampleRunAllVsRun() {
 		if errors.As(err, &fieldErrs) {
 			fmt.Printf("   Errors collected: %d\n", len(fieldErrs))
 			for _, fe := range fieldErrs {
-				fmt.Printf("     - %s\n", fe.Message)
+				fmt.Printf("     - %s\n", fe.Err.Error())
 			}
 		}
 	}
@@ -242,7 +242,7 @@ func exampleRunAllVsRun() {
 		if errors.As(err, &fieldErrs) {
 			fmt.Printf("   Errors collected: %d\n", len(fieldErrs))
 			for _, fe := range fieldErrs {
-				fmt.Printf("     - %s\n", fe.Message)
+				fmt.Printf("     - %s\n", fe.Err.Error())
 			}
 		}
 	}
@@ -275,7 +275,7 @@ func exampleSliceValidation() {
 		var fieldErrs criterio.FieldErrors
 		if errors.As(err, &fieldErrs) {
 			for _, fe := range fieldErrs {
-				fmt.Printf("   - %s: %s\n", fe.Field, fe.Message)
+				fmt.Printf("   - %s: %s\n", fe.Field, fe.Err.Error())
 			}
 		}
 	}

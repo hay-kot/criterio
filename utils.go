@@ -16,7 +16,7 @@ type Validator[T any] func(val T) error
 func Run[T any](field string, val T, validators ...Validator[T]) error {
 	for _, v := range validators {
 		if err := v(val); err != nil {
-			return NewFieldErrors(field, err.Error())
+			return NewFieldErrors(field, err)
 		}
 	}
 	return nil
@@ -28,7 +28,7 @@ func RunAll[T any](field string, val T, validators ...Validator[T]) error {
 	var errs FieldErrorsBuilder
 	for _, v := range validators {
 		if err := v(val); err != nil {
-			errs = errs.Append(field, err.Error())
+			errs = errs.Append(field, err)
 		}
 	}
 	return errs.ToError()
@@ -75,7 +75,7 @@ func ValidateStruct(validations ...error) error {
 		if errors.As(err, &fieldErrs) {
 			errs = append(errs, fieldErrs...)
 		} else {
-			errs = errs.Append("", err.Error())
+			errs = errs.Append("", err)
 		}
 	}
 	return errs.ToError()
@@ -92,14 +92,14 @@ func Nest(field string, err error) error {
 	var fieldErrs FieldErrors
 	ok := errors.As(err, &fieldErrs)
 	if !ok {
-		return NewFieldErrors(field, err.Error())
+		return NewFieldErrors(field, err)
 	}
 	nested := make(FieldErrors, len(fieldErrs))
 	for i, fe := range fieldErrs {
 		if fe.Field == "" {
-			nested[i] = FieldError{Field: field, Message: fe.Message}
+			nested[i] = FieldError{Field: field, Err: fe.Err}
 		} else {
-			nested[i] = FieldError{Field: field + "." + fe.Field, Message: fe.Message}
+			nested[i] = FieldError{Field: field + "." + fe.Field, Err: fe.Err}
 		}
 	}
 	return nested
@@ -173,13 +173,13 @@ func ValidateSlice[T any](field string, items []T, validate func(T) error) error
 			if errors.As(err, &fieldErrs) {
 				for _, fe := range fieldErrs {
 					if fe.Field == "" {
-						errs = errs.Append(prefix, fe.Message)
+						errs = errs.Append(prefix, fe.Err)
 					} else {
-						errs = errs.Append(prefix+"."+fe.Field, fe.Message)
+						errs = errs.Append(prefix+"."+fe.Field, fe.Err)
 					}
 				}
 			} else {
-				errs = errs.Append(prefix, err.Error())
+				errs = errs.Append(prefix, err)
 			}
 		}
 	}
