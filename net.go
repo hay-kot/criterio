@@ -10,7 +10,10 @@ import (
 
 // Default regex patterns used by network validators.
 // These can be modified to change validation behavior globally.
+//
 // WARNING: Modifying these affects all validations application-wide.
+// Concurrent modification is not thread-safe. If you need to customize
+// patterns, do so at program initialization before any validation occurs.
 var (
 	HostnameRegex = regexp.MustCompile(`^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$`)
 )

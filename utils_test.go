@@ -256,6 +256,25 @@ func TestValidateStruct(t *testing.T) {
 			t.Errorf("expected 3 errors, got %d", len(fieldErrs))
 		}
 	})
+
+	t.Run("handles non-FieldErrors error", func(t *testing.T) {
+		err := ValidateStruct(
+			errors.New("generic error"),
+		)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		var fieldErrs FieldErrors
+		if !errors.As(err, &fieldErrs) {
+			t.Fatal("expected FieldErrors type")
+		}
+		if fieldErrs[0].Field != "" {
+			t.Errorf("expected empty field, got %s", fieldErrs[0].Field)
+		}
+		if fieldErrs[0].Message != "generic error" {
+			t.Errorf("expected 'generic error', got %s", fieldErrs[0].Message)
+		}
+	})
 }
 
 func TestNest(t *testing.T) {
@@ -389,6 +408,16 @@ func TestNest(t *testing.T) {
 			t.Errorf("unexpected error: %v", err)
 		}
 	})
+
+	t.Run("handles non-FieldErrors error", func(t *testing.T) {
+		err := Nest("config", errors.New("invalid format"))
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if err.Error() != "config: invalid format" {
+			t.Errorf("unexpected error: %v", err)
+		}
+	})
 }
 
 func TestWhen(t *testing.T) {
@@ -418,6 +447,15 @@ func TestWhen(t *testing.T) {
 		if err := validator("hello"); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+	})
+
+	t.Run("panics with empty validators", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Error("expected panic, got nil")
+			}
+		}()
+		When[string](true)
 	})
 }
 
@@ -470,11 +508,13 @@ func TestOr(t *testing.T) {
 		}
 	})
 
-	t.Run("handles empty validators", func(t *testing.T) {
-		validator := Or[string]()
-		if err := validator("anything"); err != nil {
-			t.Errorf("expected nil, got %v", err)
-		}
+	t.Run("panics with empty validators", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Error("expected panic, got nil")
+			}
+		}()
+		Or[string]()
 	})
 }
 

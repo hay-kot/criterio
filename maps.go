@@ -44,6 +44,8 @@ func MapNotEmpty[K comparable, V any]() Validator[map[K]V] {
 }
 
 // MapKeys returns a validator that applies a validator to each key in a map.
+// Note: Map iteration order is non-deterministic in Go. When multiple keys fail
+// validation, the error returned may vary between runs.
 func MapKeys[K comparable, V any](validator Validator[K]) Validator[map[K]V] {
 	return func(val map[K]V) error {
 		for k := range val {
@@ -56,6 +58,8 @@ func MapKeys[K comparable, V any](validator Validator[K]) Validator[map[K]V] {
 }
 
 // MapValues returns a validator that applies a validator to each value in a map.
+// Note: Map iteration order is non-deterministic in Go. When multiple values fail
+// validation, the error returned may vary between runs.
 func MapValues[K comparable, V any](validator Validator[V]) Validator[map[K]V] {
 	return func(val map[K]V) error {
 		for k, v := range val {

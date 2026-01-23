@@ -16,6 +16,7 @@ func TestSliceLenMin(t *testing.T) {
 		{"length above min", 3, []int{1, 2, 3, 4}, false},
 		{"length below min", 3, []int{1, 2}, true},
 		{"empty slice", 1, []int{}, true},
+		{"nil slice", 1, nil, true},
 	}
 
 	for _, tt := range tests {
@@ -38,6 +39,7 @@ func TestSliceLenMax(t *testing.T) {
 		{"length equals max", 3, []int{1, 2, 3}, false},
 		{"length below max", 3, []int{1, 2}, false},
 		{"length above max", 3, []int{1, 2, 3, 4}, true},
+		{"nil slice", 3, nil, false},
 	}
 
 	for _, tt := range tests {
@@ -63,6 +65,7 @@ func TestSliceLenBetween(t *testing.T) {
 		{"length in range", 2, 4, []int{1, 2, 3}, false},
 		{"length below range", 2, 4, []int{1}, true},
 		{"length above range", 2, 4, []int{1, 2, 3, 4, 5}, true},
+		{"nil slice", 2, 4, nil, true},
 	}
 
 	for _, tt := range tests {

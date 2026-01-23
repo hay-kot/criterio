@@ -48,4 +48,13 @@ func TestOneOf(t *testing.T) {
 			t.Error("expected error, got nil")
 		}
 	})
+
+	t.Run("panics with empty allowed set", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Error("expected panic, got nil")
+			}
+		}()
+		OneOf[string]()
+	})
 }

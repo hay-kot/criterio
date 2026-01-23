@@ -16,6 +16,7 @@ func TestMapLenMin(t *testing.T) {
 		{"length above min", 2, map[string]int{"a": 1, "b": 2, "c": 3}, false},
 		{"length below min", 2, map[string]int{"a": 1}, true},
 		{"empty map", 1, map[string]int{}, true},
+		{"nil map", 1, nil, true},
 	}
 
 	for _, tt := range tests {
@@ -38,6 +39,7 @@ func TestMapLenMax(t *testing.T) {
 		{"length equals max", 3, map[string]int{"a": 1, "b": 2, "c": 3}, false},
 		{"length below max", 3, map[string]int{"a": 1, "b": 2}, false},
 		{"length above max", 2, map[string]int{"a": 1, "b": 2, "c": 3}, true},
+		{"nil map", 3, nil, false},
 	}
 
 	for _, tt := range tests {
@@ -63,6 +65,7 @@ func TestMapLenBetween(t *testing.T) {
 		{"length in range", 2, 4, map[string]int{"a": 1, "b": 2, "c": 3}, false},
 		{"length below range", 2, 4, map[string]int{"a": 1}, true},
 		{"length above range", 2, 4, map[string]int{"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}, true},
+		{"nil map", 2, 4, nil, true},
 	}
 
 	for _, tt := range tests {

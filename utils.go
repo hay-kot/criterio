@@ -59,6 +59,10 @@ func Required[T comparable](val T) error {
 
 // ValidateStruct combines multiple field validation results into a single error.
 // Pass the results of Run/RunAll calls for each field.
+//
+// Non-FieldErrors errors (e.g., from external libraries) are included with an
+// empty field name. For proper field context, wrap external errors with Nest
+// or use Run/RunAll.
 func ValidateStruct(validations ...error) error {
 	var errs FieldErrorsBuilder
 	for _, err := range validations {
@@ -77,6 +81,8 @@ func ValidateStruct(validations ...error) error {
 
 // Nest prefixes all field errors with a parent field name using dot notation.
 // Useful for nested struct validation to create paths like "address.street".
+//
+// Non-FieldErrors errors are wrapped with the field name as context.
 func Nest(field string, err error) error {
 	if err == nil {
 		return nil
@@ -99,7 +105,11 @@ func Nest(field string, err error) error {
 
 // When returns a validator that only runs if the condition is true.
 // If the condition is false, validation passes without running validators.
+// Panics if no validators are provided.
 func When[T any](condition bool, validators ...Validator[T]) Validator[T] {
+	if len(validators) == 0 {
+		panic("When: at least one validator is required")
+	}
 	return func(val T) error {
 		if !condition {
 			return nil
@@ -121,7 +131,11 @@ func SkipIf[T any](condition bool, validators ...Validator[T]) Validator[T] {
 
 // Or returns a validator that passes if any of the validators pass.
 // Returns the last error if all validators fail.
+// Panics if no validators are provided.
 func Or[T any](validators ...Validator[T]) Validator[T] {
+	if len(validators) == 0 {
+		panic("Or: at least one validator is required")
+	}
 	return func(val T) error {
 		var lastErr error
 		for _, v := range validators {

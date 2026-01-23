@@ -6,11 +6,15 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"unicode/utf8"
 )
 
 // Default regex patterns used by string validators.
 // These can be modified to change validation behavior globally.
+//
 // WARNING: Modifying these affects all validations application-wide.
+// Concurrent modification is not thread-safe. If you need to customize
+// patterns, do so at program initialization before any validation occurs.
 var (
 	EmailRegex        = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 	UUIDRegex         = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
@@ -30,22 +34,20 @@ func StrNotEmpty(val string) error {
 	return nil
 }
 
-// StrMin returns a validator that checks if a string has at least min characters.
-// This is a convenience wrapper around MinLen for strings.
+// StrMin returns a validator that checks if a string has at least min characters (runes).
 func StrMin(min int) Validator[string] {
 	return func(val string) error {
-		if len(val) < min {
+		if utf8.RuneCountInString(val) < min {
 			return fmt.Errorf("must be at least %d characters", min)
 		}
 		return nil
 	}
 }
 
-// StrMax returns a validator that checks if a string has at most max characters.
-// This is a convenience wrapper around MaxLen for strings.
+// StrMax returns a validator that checks if a string has at most max characters (runes).
 func StrMax(max int) Validator[string] {
 	return func(val string) error {
-		if len(val) > max {
+		if utf8.RuneCountInString(val) > max {
 			return fmt.Errorf("must be no more than %d characters", max)
 		}
 		return nil
@@ -53,10 +55,11 @@ func StrMax(max int) Validator[string] {
 }
 
 // StrBetween returns a validator that checks if a string length is between low and high (inclusive).
-// This is a convenience wrapper around LenBetween for strings.
+// Counts characters (runes), not bytes.
 func StrBetween(low, high int) Validator[string] {
 	return func(val string) error {
-		if len(val) < low || len(val) > high {
+		length := utf8.RuneCountInString(val)
+		if length < low || length > high {
 			return fmt.Errorf("must be between %d and %d characters", low, high)
 		}
 		return nil
@@ -84,7 +87,11 @@ func StrEmail(val string) error {
 
 // StrOneOf returns a validator that checks if a string is one of the allowed values.
 // Automatically uses slice iteration for small sets (≤10) and map lookup for larger sets.
+// Panics if no allowed values are provided.
 func StrOneOf(allowed ...string) Validator[string] {
+	if len(allowed) == 0 {
+		panic("StrOneOf: at least one allowed value is required")
+	}
 	// Use slice iteration for small sets (faster due to cache locality)
 	if len(allowed) <= 10 {
 		return func(val string) error {

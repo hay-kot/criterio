@@ -84,7 +84,11 @@ func NonZero[T SignedNumber]() Validator[T] {
 
 // MultipleOf returns a validator that checks if a value is divisible by n.
 // Works with integer types only.
+// Panics if n is zero.
 func MultipleOf[T Integer](n T) Validator[T] {
+	if n == 0 {
+		panic("MultipleOf: divisor cannot be zero")
+	}
 	return func(val T) error {
 		if val%n != 0 {
 			return fmt.Errorf("must be a multiple of %v", n)
