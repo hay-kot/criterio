@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/hay-kot/criterio"
@@ -110,7 +111,8 @@ func exampleNestedErrors() {
 
 	if err := invalidUser.Validate(); err != nil {
 		// Show individual field errors
-		if fieldErrs, ok := err.(criterio.FieldErrors); ok {
+		var fieldErrs criterio.FieldErrors
+		if errors.As(err, &fieldErrs) {
 			for _, fe := range fieldErrs {
 				fmt.Printf("   - %s: %s\n", fe.Field, fe.Message)
 			}
@@ -150,7 +152,8 @@ func exampleConditionalValidation() {
 	}
 
 	if err := premiumUser.Validate(); err != nil {
-		if fieldErrs, ok := err.(criterio.FieldErrors); ok {
+		var fieldErrs criterio.FieldErrors
+		if errors.As(err, &fieldErrs) {
 			for _, fe := range fieldErrs {
 				fmt.Printf("   Premium user error - %s: %s\n", fe.Field, fe.Message)
 			}
@@ -219,7 +222,8 @@ func exampleRunAllVsRun() {
 		criterio.StrMin(5),
 		criterio.StrEmail,
 	); err != nil {
-		if fieldErrs, ok := err.(criterio.FieldErrors); ok {
+		var fieldErrs criterio.FieldErrors
+		if errors.As(err, &fieldErrs) {
 			fmt.Printf("   Errors collected: %d\n", len(fieldErrs))
 			for _, fe := range fieldErrs {
 				fmt.Printf("     - %s\n", fe.Message)
@@ -234,10 +238,44 @@ func exampleRunAllVsRun() {
 		criterio.StrMin(5),
 		criterio.StrEmail,
 	); err != nil {
-		if fieldErrs, ok := err.(criterio.FieldErrors); ok {
+		var fieldErrs criterio.FieldErrors
+		if errors.As(err, &fieldErrs) {
 			fmt.Printf("   Errors collected: %d\n", len(fieldErrs))
 			for _, fe := range fieldErrs {
 				fmt.Printf("     - %s\n", fe.Message)
+			}
+		}
+	}
+}
+
+func exampleSliceValidation() {
+	fmt.Println()
+	fmt.Println("6. Slice Validation")
+	fmt.Println("   -----------------")
+
+	type Order struct {
+		ID        string
+		Addresses []Address
+	}
+
+	order := Order{
+		ID: "order-123",
+		Addresses: []Address{
+			{Street: "123 Main St", City: "Austin", Zip: "78701"},
+			{Street: "", City: "Dallas", Zip: "abc"}, // invalid
+			{Street: "789 Oak Ave", City: "", Zip: "77001"},
+		},
+	}
+
+	err := criterio.ValidateStruct(
+		criterio.Run("id", order.ID, criterio.Required[string]),
+		criterio.ValidateSlice("addresses", order.Addresses, Address.Validate),
+	)
+	if err != nil {
+		var fieldErrs criterio.FieldErrors
+		if errors.As(err, &fieldErrs) {
+			for _, fe := range fieldErrs {
+				fmt.Printf("   - %s: %s\n", fe.Field, fe.Message)
 			}
 		}
 	}
