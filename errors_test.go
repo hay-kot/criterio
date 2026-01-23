@@ -23,7 +23,7 @@ func TestFieldError(t *testing.T) {
 	t.Run("unwrap returns underlying error", func(t *testing.T) {
 		underlying := errors.New("is invalid")
 		err := FieldError{Field: "email", Err: underlying}
-		if err.Unwrap() != underlying {
+		if !errors.Is(err.Unwrap(), underlying) {
 			t.Errorf("Unwrap() did not return underlying error")
 		}
 	})
@@ -98,7 +98,7 @@ func TestNewFieldErrors(t *testing.T) {
 	if len(errs) != 1 {
 		t.Errorf("expected 1 error, got %d", len(errs))
 	}
-	if errs[0].Field != "field" || errs[0].Err != underlying {
+	if errs[0].Field != "field" || !errors.Is(errs[0].Err, underlying) {
 		t.Errorf("unexpected error: %+v", errs[0])
 	}
 }

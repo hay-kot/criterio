@@ -6,6 +6,29 @@ tasks:
     cmds:
       - go test ./...
 
+  fmt:
+    desc: Runs golangci-lint fmt
+    cmds:
+      - golangci-lint fmt
+
+  tidy:
+    desc: Runs go mod tidy
+    cmds:
+      - go mod tidy
+
+  lint:
+    desc: Runs golangci-lint
+    cmds:
+      - golangci-lint run ./... --fix
+
+  pr:
+    desc: Runs all checks for PR
+    deps: # ran concurrently
+      - task: test
+      - task: fmt
+      - task: tidy
+      - task: lint
+
   bench:
     desc: Run benchmarks
     dir: benchmarks
