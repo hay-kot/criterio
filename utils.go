@@ -28,6 +28,9 @@ func RunAll[T any](field string, val T, validators ...Validator[T]) error {
 	var errs FieldErrorsBuilder
 	for _, v := range validators {
 		if err := v(val); err != nil {
+			if errs == nil {
+				errs = make(FieldErrorsBuilder, 0, min(len(validators), 8))
+			}
 			errs = errs.Append(field, err)
 		}
 	}
@@ -70,6 +73,9 @@ func ValidateStruct(validations ...error) error {
 	for _, err := range validations {
 		if err == nil {
 			continue
+		}
+		if errs == nil {
+			errs = make(FieldErrorsBuilder, 0, min(len(validations), 8))
 		}
 		var fieldErrs FieldErrors
 		if errors.As(err, &fieldErrs) {
@@ -168,6 +174,9 @@ func ValidateSlice[T any](field string, items []T, validate func(T) error) error
 	var errs FieldErrorsBuilder
 	for i, item := range items {
 		if err := validate(item); err != nil {
+			if errs == nil {
+				errs = make(FieldErrorsBuilder, 0, min(len(items), 8))
+			}
 			prefix := field + "[" + strconv.Itoa(i) + "]"
 			var fieldErrs FieldErrors
 			if errors.As(err, &fieldErrs) {
