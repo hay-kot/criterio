@@ -292,37 +292,38 @@ Run `task bench:readme` to regenerate.
 
 - **Zero allocations** on valid inputs - the happy path is allocation-free
 - **~2x faster** than go-playground/validator for struct validation
-- Comparable to manual validation for simple cases, with the benefit of structured error handling
-- Error paths allocate more than manual validation due to `FieldErrors` construction, but provide richer error context
+- Comparable to manual validation for simple cases, with structured error handling
+- Error paths are competitive with go-playground/validator for typical structs (User: 1077ns/453B vs 1135ns/665B)
+- Complex nested validation has more allocations due to `FieldErrors` merging, but provides richer error context with field paths
 
 <!-- BENCHMARK_START -->
 
-| Benchmark                | ns/op | B/op | allocs/op |
-| ------------------------ | ----: | ---: | --------: |
-| Email_Manual_Valid       | 368.8 |    0 |         0 |
-| Email_Playground_Valid   | 654.4 |    0 |         0 |
-| Email_Criterio_Valid     | 374.1 |    0 |         0 |
-| Email_Manual_Invalid     | 365.5 |   16 |         1 |
-| Email_Playground_Invalid | 699.7 |  185 |         3 |
-| Email_Criterio_Invalid   | 418.1 |   56 |         2 |
-| User_Manual_Valid        | 233.2 |   88 |         5 |
-| User_Playground_Valid    | 877.2 |   48 |         1 |
-| User_Criterio_Valid      | 409.6 |    0 |         0 |
-| User_Manual_Invalid      | 19.93 |   16 |         1 |
-| User_Playground_Invalid  |  1145 |  664 |        11 |
-| User_Criterio_Invalid    |  1205 |  584 |        17 |
-| Order_Manual_Valid       | 540.4 |   88 |         5 |
-| Order_Playground_Valid   |  1956 |  235 |         5 |
-| Order_Criterio_Valid     | 816.9 |    0 |         0 |
-| Order_Manual_Invalid     | 23.52 |   16 |         1 |
-| Order_Playground_Invalid |  2129 | 2188 |        25 |
-| Order_Criterio_Invalid   |  3451 | 2785 |        59 |
-| Slice_Manual_Valid       | 4.161 |    0 |         0 |
-| Slice_Playground_Valid   | 467.9 |  104 |         7 |
-| Slice_Criterio_Valid     | 79.73 |   40 |         2 |
-| User_Manual_Parallel     | 72.41 |   88 |         5 |
-| User_Playground_Parallel | 180.9 |   49 |         1 |
-| User_Criterio_Parallel   | 69.96 |    0 |         0 |
+| Benchmark | ns/op | B/op | allocs/op |
+|-----------|------:|-----:|----------:|
+| Email_Manual_Valid | 367.7 | 0 | 0 |
+| Email_Playground_Valid | 653.0 | 0 | 0 |
+| Email_Criterio_Valid | 375.4 | 0 | 0 |
+| Email_Manual_Invalid | 365.9 | 16 | 1 |
+| Email_Playground_Invalid | 696.5 | 185 | 3 |
+| Email_Criterio_Invalid | 411.2 | 56 | 2 |
+| User_Manual_Valid | 232.0 | 88 | 5 |
+| User_Playground_Valid | 873.1 | 48 | 1 |
+| User_Criterio_Valid | 412.1 | 0 | 0 |
+| User_Manual_Invalid | 19.84 | 16 | 1 |
+| User_Playground_Invalid | 1135 | 665 | 11 |
+| User_Criterio_Invalid | 1077 | 453 | 15 |
+| Order_Manual_Valid | 540.1 | 88 | 5 |
+| Order_Playground_Valid | 1949 | 235 | 5 |
+| Order_Criterio_Valid | 816.2 | 0 | 0 |
+| Order_Manual_Invalid | 23.67 | 16 | 1 |
+| Order_Playground_Invalid | 2169 | 2186 | 25 |
+| Order_Criterio_Invalid | 3268 | 2525 | 54 |
+| Slice_Manual_Valid | 4.149 | 0 | 0 |
+| Slice_Playground_Valid | 457.8 | 104 | 7 |
+| Slice_Criterio_Valid | 79.43 | 40 | 2 |
+| User_Manual_Parallel | 79.44 | 88 | 5 |
+| User_Playground_Parallel | 232.5 | 49 | 1 |
+| User_Criterio_Parallel | 92.03 | 0 | 0 |
 
 <!-- BENCHMARK_END -->
 
