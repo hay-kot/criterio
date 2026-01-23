@@ -184,4 +184,13 @@ func TestMultipleOf(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("panics with zero divisor", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Error("expected panic, got nil")
+			}
+		}()
+		MultipleOf(0)
+	})
 }

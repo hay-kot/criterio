@@ -473,6 +473,15 @@ func TestSkipIf(t *testing.T) {
 			t.Error("expected error, got nil")
 		}
 	})
+
+	t.Run("panics with empty validators", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Error("expected panic, got nil")
+			}
+		}()
+		SkipIf[string](false)
+	})
 }
 
 func TestOr(t *testing.T) {

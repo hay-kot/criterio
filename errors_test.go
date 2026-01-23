@@ -27,6 +27,14 @@ func TestFieldError(t *testing.T) {
 			t.Errorf("Unwrap() did not return underlying error")
 		}
 	})
+
+	t.Run("errors.Is works with wrapped error", func(t *testing.T) {
+		underlying := errors.New("is invalid")
+		err := FieldError{Field: "email", Err: underlying}
+		if !errors.Is(err, underlying) {
+			t.Error("errors.Is should match underlying error")
+		}
+	})
 }
 
 func TestFieldErrorsBuilder(t *testing.T) {

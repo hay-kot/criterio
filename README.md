@@ -6,7 +6,7 @@ A composable validation library for Go. Validators are functions that can be com
 go get github.com/hay-kot/criterio
 ```
 
-Requires Go 1.25+
+Requires Go 1.23+
 
 ## Core Concepts
 
@@ -214,8 +214,8 @@ Errors are returned as `FieldErrors`, a slice of `FieldError`:
 
 ```go
 type FieldError struct {
-    Field   string
-    Message string
+    Field string
+    Err   error
 }
 ```
 
@@ -253,7 +253,7 @@ emails[1]: must be a valid email address
 if err := user.Validate(); err != nil {
     if fieldErrs, ok := err.(criterio.FieldErrors); ok {
         for _, fe := range fieldErrs {
-            fmt.Printf("%s: %s\n", fe.Field, fe.Message)
+            fmt.Printf("%s: %s\n", fe.Field, fe.Err.Error())
         }
     }
 }

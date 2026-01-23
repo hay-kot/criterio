@@ -133,6 +133,7 @@ func When[T any](condition bool, validators ...Validator[T]) Validator[T] {
 
 // SkipIf returns a validator that skips validation if the condition is true.
 // If the condition is true, validation passes without running validators.
+// Panics if no validators are provided.
 func SkipIf[T any](condition bool, validators ...Validator[T]) Validator[T] {
 	return When(!condition, validators...)
 }
