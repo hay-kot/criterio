@@ -1,6 +1,12 @@
 package criterio
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// Static error messages for map validators.
+var errMapEmpty = errors.New("must not be empty")
 
 // MapLenMin returns a validator that checks if a map has at least min entries.
 func MapLenMin[K comparable, V any](min int) Validator[map[K]V] {
@@ -37,7 +43,7 @@ func MapLenBetween[K comparable, V any](low, high int) Validator[map[K]V] {
 func MapNotEmpty[K comparable, V any]() Validator[map[K]V] {
 	return func(val map[K]V) error {
 		if len(val) == 0 {
-			return fmt.Errorf("must not be empty")
+			return errMapEmpty
 		}
 		return nil
 	}

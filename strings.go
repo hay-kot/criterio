@@ -1,12 +1,28 @@
 package criterio
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"regexp"
 	"slices"
 	"strings"
 	"unicode/utf8"
+)
+
+// Static error messages for string validators.
+var (
+	errStrEmpty        = errors.New("cannot be empty")
+	errStrPattern      = errors.New("does not match required pattern")
+	errStrEmail        = errors.New("must be a valid email address")
+	errStrURL          = errors.New("must be a valid URL")
+	errStrUUID         = errors.New("must be a valid UUID")
+	errStrAlpha        = errors.New("must contain only letters")
+	errStrAlphanumeric = errors.New("must contain only letters and numbers")
+	errStrNumeric      = errors.New("must contain only digits")
+	errStrWhitespace   = errors.New("must not contain whitespace")
+	errStrLowercase    = errors.New("must be lowercase")
+	errStrUppercase    = errors.New("must be uppercase")
 )
 
 // Default regex patterns used by string validators.
@@ -29,7 +45,7 @@ var (
 // Use Required[string]() if you only want to reject the zero value "".
 func StrNotEmpty(val string) error {
 	if strings.TrimSpace(val) == "" {
-		return fmt.Errorf("cannot be empty")
+		return errStrEmpty
 	}
 	return nil
 }
@@ -70,7 +86,7 @@ func StrBetween(low, high int) Validator[string] {
 func StrMatches(re *regexp.Regexp) Validator[string] {
 	return func(val string) error {
 		if !re.MatchString(val) {
-			return fmt.Errorf("does not match required pattern")
+			return errStrPattern
 		}
 		return nil
 	}
@@ -80,7 +96,7 @@ func StrMatches(re *regexp.Regexp) Validator[string] {
 // Uses EmailRegex which can be modified to change validation globally.
 func StrEmail(val string) error {
 	if !EmailRegex.MatchString(val) {
-		return fmt.Errorf("must be a valid email address")
+		return errStrEmail
 	}
 	return nil
 }
@@ -120,7 +136,7 @@ func StrOneOf(allowed ...string) Validator[string] {
 func StrURL(val string) error {
 	u, err := url.Parse(val)
 	if err != nil || u.Scheme == "" || u.Host == "" {
-		return fmt.Errorf("must be a valid URL")
+		return errStrURL
 	}
 	return nil
 }
@@ -129,7 +145,7 @@ func StrURL(val string) error {
 // Uses UUIDRegex which can be modified to change validation globally.
 func StrUUID(val string) error {
 	if !UUIDRegex.MatchString(val) {
-		return fmt.Errorf("must be a valid UUID")
+		return errStrUUID
 	}
 	return nil
 }
@@ -138,7 +154,7 @@ func StrUUID(val string) error {
 // Uses AlphaRegex which can be modified to change validation globally.
 func StrAlpha(val string) error {
 	if !AlphaRegex.MatchString(val) {
-		return fmt.Errorf("must contain only letters")
+		return errStrAlpha
 	}
 	return nil
 }
@@ -147,7 +163,7 @@ func StrAlpha(val string) error {
 // Uses AlphanumericRegex which can be modified to change validation globally.
 func StrAlphanumeric(val string) error {
 	if !AlphanumericRegex.MatchString(val) {
-		return fmt.Errorf("must contain only letters and numbers")
+		return errStrAlphanumeric
 	}
 	return nil
 }
@@ -156,7 +172,7 @@ func StrAlphanumeric(val string) error {
 // Uses NumericRegex which can be modified to change validation globally.
 func StrNumeric(val string) error {
 	if !NumericRegex.MatchString(val) {
-		return fmt.Errorf("must contain only digits")
+		return errStrNumeric
 	}
 	return nil
 }
@@ -195,7 +211,7 @@ func StrHasSuffix(suffix string) Validator[string] {
 // Uses WhitespaceRegex which can be modified to change validation globally.
 func StrNoWhitespace(val string) error {
 	if WhitespaceRegex.MatchString(val) {
-		return fmt.Errorf("must not contain whitespace")
+		return errStrWhitespace
 	}
 	return nil
 }
@@ -203,7 +219,7 @@ func StrNoWhitespace(val string) error {
 // StrLowercase validates that a string is all lowercase.
 func StrLowercase(val string) error {
 	if val != strings.ToLower(val) {
-		return fmt.Errorf("must be lowercase")
+		return errStrLowercase
 	}
 	return nil
 }
@@ -211,7 +227,7 @@ func StrLowercase(val string) error {
 // StrUppercase validates that a string is all uppercase.
 func StrUppercase(val string) error {
 	if val != strings.ToUpper(val) {
-		return fmt.Errorf("must be uppercase")
+		return errStrUppercase
 	}
 	return nil
 }

@@ -2,9 +2,11 @@ package criterio
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 )
+
+// Static error messages for utility validators.
+var errRequired = errors.New("is required")
 
 // Validator validates a value and returns an error if validation fails.
 type Validator[T any] func(val T) error
@@ -52,7 +54,7 @@ func NewAll[T any](field string, validators ...Validator[T]) func(val T) error {
 func Required[T comparable](val T) error {
 	var zero T
 	if val == zero {
-		return fmt.Errorf("is required")
+		return errRequired
 	}
 	return nil
 }

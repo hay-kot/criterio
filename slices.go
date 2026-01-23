@@ -1,6 +1,15 @@
 package criterio
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// Static error messages for slice validators.
+var (
+	errSliceEmpty  = errors.New("must not be empty")
+	errSliceUnique = errors.New("must contain unique elements")
+)
 
 // SliceLenMin returns a validator that checks if a slice has at least min elements.
 func SliceLenMin[T any](min int) Validator[[]T] {
@@ -37,7 +46,7 @@ func SliceLenBetween[T any](low, high int) Validator[[]T] {
 func SliceNotEmpty[T any]() Validator[[]T] {
 	return func(val []T) error {
 		if len(val) == 0 {
-			return fmt.Errorf("must not be empty")
+			return errSliceEmpty
 		}
 		return nil
 	}
@@ -49,7 +58,7 @@ func SliceUnique[T comparable]() Validator[[]T] {
 		seen := make(map[T]struct{}, len(val))
 		for _, v := range val {
 			if _, exists := seen[v]; exists {
-				return fmt.Errorf("must contain unique elements")
+				return errSliceUnique
 			}
 			seen[v] = struct{}{}
 		}

@@ -1,9 +1,13 @@
 package criterio
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
+
+// Static error messages for duration validators.
+var errDurPositive = errors.New("must be positive")
 
 // DurMin returns a validator that checks if a duration is at least min.
 func DurMin(min time.Duration) Validator[time.Duration] {
@@ -38,7 +42,7 @@ func DurBetween(low, high time.Duration) Validator[time.Duration] {
 // DurPositive validates that a duration is positive (greater than zero).
 func DurPositive(val time.Duration) error {
 	if val <= 0 {
-		return fmt.Errorf("must be positive")
+		return errDurPositive
 	}
 	return nil
 }

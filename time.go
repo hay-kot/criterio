@@ -1,15 +1,22 @@
 package criterio
 
 import (
+	"errors"
 	"fmt"
 	"time"
+)
+
+// Static error messages for time validators.
+var (
+	errTimeFuture = errors.New("must be in the future")
+	errTimePast   = errors.New("must be in the past")
 )
 
 // TimeFuture returns a validator that checks if a time is in the future.
 func TimeFuture() Validator[time.Time] {
 	return func(val time.Time) error {
 		if !val.After(time.Now()) {
-			return fmt.Errorf("must be in the future")
+			return errTimeFuture
 		}
 		return nil
 	}
@@ -19,7 +26,7 @@ func TimeFuture() Validator[time.Time] {
 func TimePast() Validator[time.Time] {
 	return func(val time.Time) error {
 		if !val.Before(time.Now()) {
-			return fmt.Errorf("must be in the past")
+			return errTimePast
 		}
 		return nil
 	}

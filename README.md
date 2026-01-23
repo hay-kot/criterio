@@ -282,6 +282,50 @@ func init() {
 }
 ```
 
+## Benchmarks
+
+Comparison against manual validation and [go-playground/validator](https://github.com/go-playground/validator).
+
+Run `task bench:readme` to regenerate.
+
+**Key takeaways:**
+
+- **Zero allocations** on valid inputs - the happy path is allocation-free
+- **~2x faster** than go-playground/validator for struct validation
+- Comparable to manual validation for simple cases, with the benefit of structured error handling
+- Error paths allocate more than manual validation due to `FieldErrors` construction, but provide richer error context
+
+<!-- BENCHMARK_START -->
+
+| Benchmark                | ns/op | B/op | allocs/op |
+| ------------------------ | ----: | ---: | --------: |
+| Email_Manual_Valid       | 368.8 |    0 |         0 |
+| Email_Playground_Valid   | 654.4 |    0 |         0 |
+| Email_Criterio_Valid     | 374.1 |    0 |         0 |
+| Email_Manual_Invalid     | 365.5 |   16 |         1 |
+| Email_Playground_Invalid | 699.7 |  185 |         3 |
+| Email_Criterio_Invalid   | 418.1 |   56 |         2 |
+| User_Manual_Valid        | 233.2 |   88 |         5 |
+| User_Playground_Valid    | 877.2 |   48 |         1 |
+| User_Criterio_Valid      | 409.6 |    0 |         0 |
+| User_Manual_Invalid      | 19.93 |   16 |         1 |
+| User_Playground_Invalid  |  1145 |  664 |        11 |
+| User_Criterio_Invalid    |  1205 |  584 |        17 |
+| Order_Manual_Valid       | 540.4 |   88 |         5 |
+| Order_Playground_Valid   |  1956 |  235 |         5 |
+| Order_Criterio_Valid     | 816.9 |    0 |         0 |
+| Order_Manual_Invalid     | 23.52 |   16 |         1 |
+| Order_Playground_Invalid |  2129 | 2188 |        25 |
+| Order_Criterio_Invalid   |  3451 | 2785 |        59 |
+| Slice_Manual_Valid       | 4.161 |    0 |         0 |
+| Slice_Playground_Valid   | 467.9 |  104 |         7 |
+| Slice_Criterio_Valid     | 79.73 |   40 |         2 |
+| User_Manual_Parallel     | 72.41 |   88 |         5 |
+| User_Playground_Parallel | 180.9 |   49 |         1 |
+| User_Criterio_Parallel   | 69.96 |    0 |         0 |
+
+<!-- BENCHMARK_END -->
+
 ## License
 
 MIT

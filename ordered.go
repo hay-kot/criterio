@@ -2,7 +2,15 @@ package criterio
 
 import (
 	"cmp"
+	"errors"
 	"fmt"
+)
+
+// Static error messages for ordered validators.
+var (
+	errPositive = errors.New("must be positive")
+	errNegative = errors.New("must be negative")
+	errNonZero  = errors.New("must not be zero")
 )
 
 // Integer is a constraint for all integer types.
@@ -54,7 +62,7 @@ func Between[T cmp.Ordered](low, high T) Validator[T] {
 func Positive[T SignedNumber]() Validator[T] {
 	return func(val T) error {
 		if val <= 0 {
-			return fmt.Errorf("must be positive")
+			return errPositive
 		}
 		return nil
 	}
@@ -65,7 +73,7 @@ func Positive[T SignedNumber]() Validator[T] {
 func Negative[T SignedNumber]() Validator[T] {
 	return func(val T) error {
 		if val >= 0 {
-			return fmt.Errorf("must be negative")
+			return errNegative
 		}
 		return nil
 	}
@@ -76,7 +84,7 @@ func Negative[T SignedNumber]() Validator[T] {
 func NonZero[T SignedNumber]() Validator[T] {
 	return func(val T) error {
 		if val == 0 {
-			return fmt.Errorf("must not be zero")
+			return errNonZero
 		}
 		return nil
 	}

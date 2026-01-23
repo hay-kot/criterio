@@ -1,9 +1,12 @@
 package criterio
 
 import (
-	"fmt"
+	"errors"
 	"slices"
 )
+
+// Static error messages for comparable validators.
+var errOneOf = errors.New("must be one of the allowed values")
 
 // OneOf returns a validator that checks if a value is one of the allowed values.
 // Works with any comparable type. Automatically uses slice iteration for small sets
@@ -19,7 +22,7 @@ func OneOf[T comparable](allowed ...T) Validator[T] {
 			if slices.Contains(allowed, val) {
 				return nil
 			}
-			return fmt.Errorf("must be one of the allowed values")
+			return errOneOf
 		}
 	}
 
@@ -30,7 +33,7 @@ func OneOf[T comparable](allowed ...T) Validator[T] {
 	}
 	return func(val T) error {
 		if _, ok := allowedSet[val]; !ok {
-			return fmt.Errorf("must be one of the allowed values")
+			return errOneOf
 		}
 		return nil
 	}

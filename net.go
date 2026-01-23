@@ -1,11 +1,21 @@
 package criterio
 
 import (
-	"fmt"
+	"errors"
 	"net"
 	"regexp"
 	"strconv"
 	"strings"
+)
+
+// Static error messages for network validators.
+var (
+	errNetIP       = errors.New("must be a valid IP address")
+	errNetIPv4     = errors.New("must be a valid IPv4 address")
+	errNetIPv6     = errors.New("must be a valid IPv6 address")
+	errNetCIDR     = errors.New("must be valid CIDR notation")
+	errNetHostname = errors.New("must be a valid hostname")
+	errNetPort     = errors.New("must be a valid port number (1-65535)")
 )
 
 // Default regex patterns used by network validators.
@@ -21,7 +31,7 @@ var (
 // NetIP validates that a string is a valid IP address (IPv4 or IPv6).
 func NetIP(val string) error {
 	if net.ParseIP(val) == nil {
-		return fmt.Errorf("must be a valid IP address")
+		return errNetIP
 	}
 	return nil
 }
@@ -30,7 +40,7 @@ func NetIP(val string) error {
 func NetIPv4(val string) error {
 	ip := net.ParseIP(val)
 	if ip == nil || ip.To4() == nil {
-		return fmt.Errorf("must be a valid IPv4 address")
+		return errNetIPv4
 	}
 	return nil
 }
@@ -39,7 +49,7 @@ func NetIPv4(val string) error {
 func NetIPv6(val string) error {
 	ip := net.ParseIP(val)
 	if ip == nil || ip.To4() != nil {
-		return fmt.Errorf("must be a valid IPv6 address")
+		return errNetIPv6
 	}
 	return nil
 }
@@ -48,7 +58,7 @@ func NetIPv6(val string) error {
 func NetCIDR(val string) error {
 	_, _, err := net.ParseCIDR(val)
 	if err != nil {
-		return fmt.Errorf("must be valid CIDR notation")
+		return errNetCIDR
 	}
 	return nil
 }
@@ -57,15 +67,15 @@ func NetCIDR(val string) error {
 // Uses HostnameRegex which can be modified to change validation globally.
 func NetHost(val string) error {
 	if len(val) > 253 {
-		return fmt.Errorf("must be a valid hostname")
+		return errNetHostname
 	}
 	if !HostnameRegex.MatchString(val) {
-		return fmt.Errorf("must be a valid hostname")
+		return errNetHostname
 	}
 	// Check each label length
 	for _, label := range strings.Split(val, ".") {
 		if len(label) > 63 {
-			return fmt.Errorf("must be a valid hostname")
+			return errNetHostname
 		}
 	}
 	return nil
@@ -74,7 +84,7 @@ func NetHost(val string) error {
 // NetPort validates that an integer is a valid port number (1-65535).
 func NetPort(val int) error {
 	if val < 1 || val > 65535 {
-		return fmt.Errorf("must be a valid port number (1-65535)")
+		return errNetPort
 	}
 	return nil
 }
@@ -83,7 +93,7 @@ func NetPort(val int) error {
 func NetPortStr(val string) error {
 	port, err := strconv.Atoi(val)
 	if err != nil || port < 1 || port > 65535 {
-		return fmt.Errorf("must be a valid port number (1-65535)")
+		return errNetPort
 	}
 	return nil
 }
